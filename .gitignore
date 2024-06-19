@@ -1,7 +1,0 @@
-.venv/*
-app/migrations/*
-__pycache__/*
-.idea/*
-.env
-.gitignore
-.app/__pycache__
