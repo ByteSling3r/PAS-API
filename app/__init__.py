@@ -3,13 +3,15 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
+from flask_bootstrap import Bootstrap
+from datetime import datetime
 from dotenv import load_dotenv
 
 
 def create_app():
     app = Flask(__name__)
     CORS(app, resources={r"/api/*": {"origins": "*"}})
-
+    boostrap = Bootstrap(app)
     load_dotenv()
 
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
@@ -17,11 +19,9 @@ def create_app():
     db = SQLAlchemy(app)
     migrate = Migrate(app, db)
 
-
     @app.route('/')
     def index():
         return render_template('index.html')
-
 
     class DeviceState(db.Model):
         id = db.Column(db.Integer, primary_key=True)
@@ -31,13 +31,11 @@ def create_app():
         def __repr__(self):
             return f'<DeviceState {self.device_name}: {self.state}>'
 
-
     @app.route('/api/state', methods=['GET'])
     def get_state():
         device_states = DeviceState.query.all()
         state_dict = {device.device_name: device.state for device in device_states}
         return jsonify(state_dict)
-
 
     @app.route('/api/state', methods=['PUT'])
     def set_state():
@@ -51,5 +49,43 @@ def create_app():
                 db.session.add(new_device)
         db.session.commit()
         return jsonify({"message": "Device states updated successfully"})
-    return app
 
+    @app.route('/api/activities', methods=['GET'])
+    def get_activities():
+        return jsonify({
+            '2024-06-19': {
+
+                'Light': {
+                    'date': datetime.now().strftime("%H:%M"),
+                    'state': 'OFF'
+                },
+                'air': {
+                    'date': datetime.now().strftime("%H:%M"),
+                    'state': 'OFF'
+                }
+            },
+            '2024-06-18': {
+                'Light': {
+                    'date': '20:40:33',
+                    'state': 'ON'
+                },
+                'Light': {
+                    'date': datetime.now().strftime("%H:%M"),
+                    'state': 'OFF'
+                },
+                'air': {
+                    'date': datetime.now().strftime("%H:%M"),
+                    'state': 'OFF'
+                },
+                'air': {
+                    'date': datetime.now().strftime("%H:%M"),
+                    'state': 'ON'
+                }
+            }
+        })
+
+    @app.route('/api/programmig', methods=['GET'])
+    def get_programming():
+        return {"Hello": "World"}
+
+    return app
