@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from .database import db, migrate
 import os
 from flask_bootstrap import Bootstrap
-from datetime import datetime
 from dotenv import load_dotenv
+from .programming_device import programming_bp
+from .device_state import state_bp
+from .activitie_log import activities_bp
 
 
 def create_app():
@@ -14,78 +15,21 @@ def create_app():
     boostrap = Bootstrap(app)
     load_dotenv()
 
+    #Blueprints
+    app.register_blueprint(state_bp)
+    app.register_blueprint(activities_bp)
+    app.register_blueprint(programming_bp)
+
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db = SQLAlchemy(app)
-    migrate = Migrate(app, db)
-
+    db.init_app(app)
+    migrate.init_app(app, db)
     @app.route('/')
     def index():
         return render_template('index.html')
 
-    class DeviceState(db.Model):
-        id = db.Column(db.Integer, primary_key=True)
-        device_name = db.Column(db.String(50), unique=True, nullable=False)
-        state = db.Column(db.String(10), nullable=False)
 
-        def __repr__(self):
-            return f'<DeviceState {self.device_name}: {self.state}>'
-
-    @app.route('/api/state', methods=['GET'])
-    def get_state():
-        device_states = DeviceState.query.all()
-        state_dict = {device.device_name: device.state for device in device_states}
-        return jsonify(state_dict)
-
-    @app.route('/api/state', methods=['PUT'])
-    def set_state():
-        data = request.json
-        for device_name, state in data.items():
-            device = DeviceState.query.filter_by(device_name=device_name).first()
-            if device:
-                device.state = state
-            else:
-                new_device = DeviceState(device_name=device_name, state=state)
-                db.session.add(new_device)
-        db.session.commit()
-        return jsonify({"message": "Device states updated successfully"})
-
-    @app.route('/api/activities', methods=['GET'])
-    def get_activities():
-        return jsonify({
-            '2024-06-19': {
-
-                'Light': {
-                    'date': datetime.now().strftime("%H:%M"),
-                    'state': 'OFF'
-                },
-                'air': {
-                    'date': datetime.now().strftime("%H:%M"),
-                    'state': 'OFF'
-                }
-            },
-            '2024-06-18': {
-                'Light': {
-                    'date': '20:40:33',
-                    'state': 'ON'
-                },
-                'Light': {
-                    'date': datetime.now().strftime("%H:%M"),
-                    'state': 'OFF'
-                },
-                'air': {
-                    'date': datetime.now().strftime("%H:%M"),
-                    'state': 'OFF'
-                },
-                'air': {
-                    'date': datetime.now().strftime("%H:%M"),
-                    'state': 'ON'
-                }
-            }
-        })
-
-    @app.route('/api/programmig', methods=['GET'])
-    def get_programming():
-        return {"Hello": "World"}
-
+    @app.errorhandler(404)
+    def not_found(error):
+        return render_template('error404.html'), 404
     return app
