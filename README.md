@@ -12,7 +12,7 @@ Este API en Flask proporciona una interfaz para gestionar Dispositivos IOT en es
 
 ## Endpoints
 - `/api/state`: Devuelve el stado de los dispositivos conectados y envio de actualización del estado.
-- `/api/activities`: Devuelve el registro del dia y de las veces que se manipuló los dispositivos conectaddos.
+- `/api/state/log`: Obtiene el registro del dia y de las veces que se manipuló los dispositivos conectados.
 - `/api/progamming`: Agrega la programación de encendido/apagado de los dispositivos conectados.
 
 ## Uso
@@ -20,7 +20,7 @@ Para utilizar este API, realiza las siguientes solicitudes HTTP:
 
 - GET `/api/state`: Obtiene el estado de los dispositivos conectados(Luces y Ventilador).
 - PUT `/api/state`: Edita los valores de ON y OFF en los dispostivos conectados.
-- GET `/api/activities`: Obtiene el registro del dia y de las veces que se manipuló los dispositivos conectaddos.
+- GET `/api/state/log`: Obtiene el registro del dia y de las veces que se manipuló los dispositivos conectados.
 - POST `/api/programming`: Agrega la programación de la hora de encendido y apagado.
 
 ## Contacto

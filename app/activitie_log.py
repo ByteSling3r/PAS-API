@@ -1,35 +1,18 @@
 from flask import Blueprint, jsonify
-from datetime import datetime
+from .models import db, DeviceStateChange
 
 activities_bp = Blueprint('activities_bp', __name__)
 
 
-@activities_bp.route('/api/activities', methods=['GET'])
-def get_activities():
-    return jsonify({
-        '2024-06-19': {
-
-            'Light': {
-                'date': datetime.now().strftime("%H:%M"),
-                'state': 'OFF'
-            },
-            'air': {
-                'date': datetime.now().strftime("%H:%M"),
-                'state': 'OFF'
-            }
-        },
-        '2024-06-18': {
-            'Light': {
-                'date': '20:40:33',
-                'state': 'ON'
-            },
-            'Light': {
-                'date': datetime.now().strftime("%H:%M"),
-                'state': 'OFF'
-            },
-            'air': {
-                'date': datetime.now().strftime("%H:%M"),
-                'state': 'OFF'
-            }
-        }
-    })
+@activities_bp.route('/api/state/log', methods=['GET'])
+def get_state_changes():
+    records = DeviceStateChange.query.all()
+    results = [
+        {
+            "device": record.device,
+            "state": record.state,
+            "time": record.time.strftime("%H:%M:%S") if record.time else None,
+            "date": record.date.strftime("%Y-%m-%d") if record.date else None
+        } for record in records
+    ]
+    return jsonify(results), 200

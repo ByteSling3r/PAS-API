@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, render_template
 from flask_cors import CORS
 from .database import db, migrate
 import os
@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from .programming_device import programming_bp
 from .device_state import state_bp
 from .activitie_log import activities_bp
-
+from .models import initialize_default_devices
 
 def create_app():
     app = Flask(__name__)
@@ -24,6 +24,13 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
     migrate.init_app(app, db)
+
+    @app.before_request
+    def setup_defaults():
+        db.create_all()
+        initialize_default_devices()
+
+
     @app.route('/')
     def index():
         return render_template('index.html')
