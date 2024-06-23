@@ -9,13 +9,14 @@ from .device_state import state_bp
 from .activitie_log import activities_bp
 from .models import initialize_default_devices
 
+
 def create_app():
     app = Flask(__name__)
     CORS(app, resources={r"/api/*": {"origins": "*"}})
     boostrap = Bootstrap(app)
     load_dotenv()
 
-    #Blueprints
+    # Blueprints
     app.register_blueprint(state_bp)
     app.register_blueprint(activities_bp)
     app.register_blueprint(programming_bp)
@@ -30,13 +31,12 @@ def create_app():
         db.create_all()
         initialize_default_devices()
 
-
     @app.route('/')
     def index():
         return render_template('index.html')
 
-
     @app.errorhandler(404)
     def not_found(error):
         return render_template('error404.html'), 404
+
     return app
