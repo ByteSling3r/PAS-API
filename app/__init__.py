@@ -8,12 +8,15 @@ from .programming_device import programming_bp
 from .device_state import state_bp
 from .activitie_log import activities_bp
 from .models import initialize_default_devices
+from .socketio import socketio
 
 
 def create_app():
     app = Flask(__name__)
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
     CORS(app, resources={r"/api/*": {"origins": "*"}})
     boostrap = Bootstrap(app)
+    socketio.init_app(app)
     load_dotenv()
 
     # Blueprints

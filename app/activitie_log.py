@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from .models import db, DeviceStateChange
+from .models import DeviceStateChange
 
 activities_bp = Blueprint('activities_bp', __name__)
 
