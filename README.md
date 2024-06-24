@@ -11,7 +11,7 @@ Esta API está diseñada para el Proyecto de Aula Semestral (PAS)
 4. Configura la base de datos: `flask db migrate && flask db upgrade`
 5. Inicia el servidor: `python run.py`
 
-# Configuración
+## Configuración
 Es necesario crear el archivo `.env`, con la siguiente variable de entorno:
 `DATABASE_URI=""`
 Para esta API se hace uso del gestor de Bases de datos **PostgreSQL**

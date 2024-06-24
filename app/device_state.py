@@ -52,4 +52,4 @@ def set_state():
                 db.session.add(new_record)
 
     db.session.commit()
-    return jsonify({"message": "Device states updated successfully"}), 201
+    return jsonify({"message": "Device states updated successfully"}), 200
