@@ -15,7 +15,7 @@ def current_date_colombia():
 
 def current_time_colombia():
     colombia_tz = pytz.timezone('America/Bogota')
-    return datetime.now(colombia_tz).time()
+    return datetime.now(colombia_tz).time().strftime("%I:%M:%S %p")
 
 
 @state_bp.route('/api/state', methods=['GET'])

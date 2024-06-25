@@ -11,7 +11,7 @@ def get_state_changes():
         {
             "device": record.device,
             "state": record.state,
-            "time": record.time.strftime("%H:%M:%S") if record.time else None,
+            "time": record.time.strftime("%I:%M:%S %p") if record.time else None,
             "date": record.date.strftime("%Y-%m-%d") if record.date else None
         } for record in records
     ]
