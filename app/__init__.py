@@ -16,7 +16,7 @@ def create_app():
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
     CORS(app, resources={r"/api/*": {"origins": "*"}})
     boostrap = Bootstrap(app)
-    socketio.init_app(app)
+    socketio.init_app(app, cors_allowed_origins=["https://front-pas.vercel.app/", "*"])
     load_dotenv()
 
     # Blueprints
