@@ -1,9 +1,11 @@
-from flask import Blueprint, jsonify, request
-from .models import DeviceState, DeviceStateChange
+from flask import Blueprint, jsonify, request, current_app
+from .models import DeviceState, DeviceStateChange, DeviceProgramming
 from .database import db
 from datetime import datetime
 import pytz
 from .socketio import socketio
+from .scheduler import job_wrapper
+
 
 state_bp = Blueprint('state', __name__)
 
@@ -52,3 +54,24 @@ def set_state():
     db.session.commit()
     socketio.emit('state_updated', data)
     return jsonify({"message": "Device states updated successfully"}), 200
+
+
+@state_bp.route('/api/programming', methods=['POST'])
+def program_device():
+    data = request.json
+    device_name = data['device_name']
+    on_time = data['on_time']
+    off_time = data['off_time']
+
+    new_programming = DeviceProgramming(device_name=device_name, on_time=on_time, off_time=off_time)
+    db.session.add(new_programming)
+    db.session.commit()
+
+    current_app.scheduler.remove_all_jobs()
+
+    current_app.scheduler.add_job(func=job_wrapper, args=[device_name, 'ON'], trigger='cron', hour=int(on_time.split(':')[0]), minute=int(on_time.split(':')[1]), id=f'{device_name}_on')
+    current_app.scheduler.add_job(func=job_wrapper, args=[device_name, 'OFF'], trigger='cron', hour=int(off_time.split(':')[0]), minute=int(off_time.split(':')[1]), id=f'{device_name}_off')
+
+    if not device_name or not on_time or not off_time:
+        return jsonify({'error': 'Missing required fields'}), 400
+    return jsonify({'message': 'Programming successful'}), 200

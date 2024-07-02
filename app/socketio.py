@@ -1,3 +1,3 @@
 from flask_socketio import SocketIO
 
-socketio = SocketIO(cors_allowed_origins=["https://front-pas.vercel.app/", "*"])
+socketio = SocketIO(cors_allowed_origins="*")

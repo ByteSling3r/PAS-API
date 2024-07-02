@@ -1,7 +1,9 @@
 from app import create_app
-
+from app.scheduler import create_scheduler
 
 app = create_app()
-if __name__ == '__main__':
+scheduler = create_scheduler(app)
+app.scheduler = scheduler
 
-    app.run(host='0.0.0.0', debug=True)
+if __name__ == '__main__':
+    app.run()

@@ -45,3 +45,13 @@ class DeviceStateChange(db.Model):
 
     def __repr__(self):
         return f'<DeviceStateChange {self.device} {self.state} {self.time} {self.date}>'
+
+
+class DeviceProgramming(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    device_name = db.Column(db.String(50), nullable=False)
+    on_time = db.Column(db.Time, nullable=False)
+    off_time = db.Column(db.Time, nullable=False)
+
+    def __repr__(self):
+        return f'<DeviceProgramming {self.device_name} - On: {self.on_time} / Off: {self.off_time}>'
